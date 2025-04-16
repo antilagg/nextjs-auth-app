@@ -1,0 +1,36 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@keyframes gradientbg {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(-45deg, #030507, #0d1117, #131720, #1c222b);
+  background-size: 400% 400%;
+  animation: gradientbg 30s ease infinite;
+  color: #f0f6fc;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+a {
+  color: #58a6ff;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+}

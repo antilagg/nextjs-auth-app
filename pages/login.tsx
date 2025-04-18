@@ -1,41 +1,39 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import styles from '../styles/auth.module.css'
+import { useAuth } from '../contexts/AuthContext'
 
 const loginpage = () => {
   const router = useRouter()
-  const [user, setuser] = useState('')
+  const { login, loading: authLoading, error: authError, user: authUser } = useAuth()
+  const [username, setusername] = useState('')
   const [pass, setpass] = useState('')
+  const [rememberme, setrememberme] = useState(false)
   const [errmsg, seterrmsg] = useState('')
-  const [loading, setloading] = useState(false)
+
+  useEffect(() => {
+    if (authUser) {
+      router.push('/homepage')
+    }
+  }, [authUser, router])
+
+  useEffect(() => {
+    if (authError) {
+      seterrmsg(authError)
+    }
+  }, [authError])
 
   const handlesubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user || !pass) {
-      seterrmsg('filşl all fields')
+    if (!username || !pass) {
+      seterrmsg('fill all fields')
       return
     }
 
-    try {
-      setloading(true)
-        // placeholder for actual api req logic
-        // adjust endpoint method and payload as needed for your implementation
-        // exmp:
-        // const res = await fetch('/api/login', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ user, pass })
-        // })
+    seterrmsg('')
 
-      setTimeout(() => {
-        console.log('login successful:', user)
-        router.push('/homepage')
-      }, 1500)
-    } catch (err) {
-      seterrmsg('login error')
-      setloading(false)
-    }
+    await login(username, pass, rememberme)
   }
 
   return (
@@ -51,8 +49,8 @@ const loginpage = () => {
             <input
               type="text"
               id="user"
-              value={user}
-              onChange={(e) => setuser(e.target.value)}
+              value={username}
+              onChange={(e) => setusername(e.target.value)}
               className={styles.input}
             />
           </div>
@@ -68,12 +66,23 @@ const loginpage = () => {
             />
           </div>
 
+          <div className={styles.checkboxgroup}>
+            <input
+              type="checkbox"
+              id="remember"
+              checked={rememberme}
+              onChange={(e) => setrememberme(e.target.checked)}
+              className={styles.checkbox}
+            />
+            <label htmlFor="remember">remember me</label>
+          </div>
+
           <button
             type="submit"
             className={styles.btn}
-            disabled={loading}
+            disabled={authLoading}
           >
-            {loading ? 'logging' : 'login'}
+            {authLoading ? 'logging' : 'login'}
           </button>
         </form>
 

@@ -1,21 +1,36 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import styles from '../styles/auth.module.css'
+import { useAuth } from '../contexts/AuthContext'
 
 const registerpage = () => {
   const router = useRouter()
-  const [user, setuser] = useState('')
+  const { register, loading: authLoading, error: authError, user: authUser } = useAuth()
+  const [username, setusername] = useState('')
   const [email, setemail] = useState('')
   const [pass, setpass] = useState('')
   const [passrep, setpassrep] = useState('')
   const [errmsg, seterrmsg] = useState('')
-  const [loading, setloading] = useState(false)
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (authUser) {
+      router.push('/homepage')
+    }
+  }, [authUser, router])
+
+  // Update error message when auth error changes
+  useEffect(() => {
+    if (authError) {
+      seterrmsg(authError)
+    }
+  }, [authError])
 
   const handlesubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!user || !email || !pass || !passrep) {
+    if (!username || !email || !pass || !passrep) {
       seterrmsg('fill all fields')
       return
     }
@@ -30,26 +45,11 @@ const registerpage = () => {
       return
     }
 
-    try {
-      setloading(true)
-      // placeholder for actual api req logic
-      // adjust endpoint method and payload as needed for your implementation
-      // exmp:
-      // const res = await fetch('/api/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ user, email, pass })
-      // })
+    // Clear any previous error messages
+    seterrmsg('')
 
-      // after successful registration, redirect to login page
-      setTimeout(() => {
-        console.log('register succ:', user, email)
-        router.push('/login')
-      }, 1500)
-    } catch (err) {
-      seterrmsg('register error')
-      setloading(false)
-    }
+    // Use the register function from auth context
+    await register(username, email, pass)
   }
 
   return (
@@ -65,8 +65,8 @@ const registerpage = () => {
             <input
               type="text"
               id="user"
-              value={user}
-              onChange={(e) => setuser(e.target.value)}
+              value={username}
+              onChange={(e) => setusername(e.target.value)}
               className={styles.input}
             />
           </div>
@@ -107,9 +107,9 @@ const registerpage = () => {
           <button
             type="submit"
             className={styles.btn}
-            disabled={loading}
+            disabled={authLoading}
           >
-            {loading ? 'saving.' : 'register'}
+            {authLoading ? 'saving.' : 'register'}
           </button>
         </form>
 

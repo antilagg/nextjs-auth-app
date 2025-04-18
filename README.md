@@ -2,10 +2,12 @@
 
 demo login/register ui with dark theme and smooth transitions
 
-## note
-this is a demo nah real api yet - i plan to develop it later
-
 ## setup
+
+add your mongodb uri to a `.env` file in the root folder:
+```
+MONGODB_URI=mongodb+srv://your_username:your_password@your_cluster.mongodb.net/AUTH?retryWrites=true&w=majority
+```
 
 ```bash
 npm install
@@ -17,13 +19,15 @@ npm run dev
 ## features
 
 - minimal dark-themed ui
-- login/register flows
+- login/register flows with mongodb backend
 - simple form
+- psw hashing
+- remember me opt
 
 ## todo
 
-- [ ] connect to real auth api
-- [ ] add remember me functionality
+- [x] connect to real auth api
+- [x] add remember me functionality
 - [ ] implement user profiles
 - [ ] add password reset flow
 
